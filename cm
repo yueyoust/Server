@@ -1,1 +1,1 @@
-g++ -o  main main.cpp Channel.h Channel.cpp Poller.h Poller.cpp EventLoop.h EventLoop.cpp -std=c++11 -fpermissive -g
+g++ -o  main main.cpp Channel.h Channel.cpp Poller.h Poller.cpp EventLoop.h EventLoop.cpp -std=c++11 -fpermissive -g -pthread

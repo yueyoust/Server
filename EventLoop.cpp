@@ -2,14 +2,15 @@
 #include<poll.h>
 #include<iostream>
 
-EventLoop *t_loopInThisThread=0;
+__thread EventLoop *t_loopInThisThread=0;
+
 EventLoop::EventLoop():looping(false),
 	threadId(std::this_thread::get_id()),
 	poller(new Poller(this))
 {
 	if(t_loopInThisThread)
 	{
-		
+		std::cout<<"annother EventLoop	exists inthe same thread"<<std::endl;	
 	}
 	else
 	{

@@ -36,6 +36,7 @@ private:
 	typedef std::vector<Channel*> ChannelList;
 
 	void abortNotInLoopThread();
+
 	bool looping;
 	const std::thread::id threadId;
 	
