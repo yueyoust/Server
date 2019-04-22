@@ -12,6 +12,10 @@ EventLoopThread::EventLoopThread()(const ThreadInitCallback &cb,
 
 EventLoopThread::~EventLoopThread()
 {
+	if(loop_!=NULL)
+	{
+		thread_.join();
+	}
 }
 
 
