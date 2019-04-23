@@ -1,14 +1,14 @@
-#include"EventLoopThread"
+#include"EventLoopThread.h"
 
 
-EventLoopThread::EventLoopThread()(const ThreadInitCallback &cb,
-				const std::string &name)
-	:loop_(NULL)
-	 thread_(std::bind(&EventLoopThread::threadFunc,this),name),
+EventLoopThread::EventLoopThread(const ThreadInitCallback cb)
+	:loop_(NULL),
+	 thread_(std::bind(&EventLoopThread::threadFunc,this)),
 	 Mutex(),
 	 callback(cb)
 {
 }
+
 
 EventLoopThread::~EventLoopThread()
 {
@@ -19,16 +19,23 @@ EventLoopThread::~EventLoopThread()
 }
 
 
+EventLoop* EventLoopThread::getLoop()
+{
+	return loop_;
+}
+
 
 void EventLoopThread::threadFunc()
 {
 	EventLoop loop;
+
 	if(callback)
 	{
 		callback(&loop);
 	}
+
 	{
-		lock_guard lock(Mutex);
+		std::lock_guard<std::mutex> lock(Mutex);
 		loop_=&loop;
 	}
 	

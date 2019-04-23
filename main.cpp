@@ -5,8 +5,8 @@
 #include<sys/timerfd.h>
 #include"EventLoop.h"
 #include"Channel.h"
-
-EventLoop *g_loop;
+#include"EventLoopThreadPool.h"
+//EventLoop *g_loop;
 void  timeout()
 {
 	std::cout<<"timeout"<<std::endl;
@@ -15,9 +15,11 @@ int main()
 {
 	std::function<void()>callback=timeout;
 	EventLoop loop;
-	g_loop=&loop;
-
-
+	//g_loop=&loop;
+	
+	EventLoopThreadPool th(&loop,3);
+	
+	th.start(NULL);
 
 	int timefd=::timerfd_create(CLOCK_MONOTONIC,TFD_NONBLOCK|TFD_CLOEXEC);
 	std::cout<<timefd;

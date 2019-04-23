@@ -1,21 +1,29 @@
 #ifndef _EVENTLOOPTHREAD_H_
 #define _EVENTLOOPTHREAD_H_
 
-#inlucde<mutex>
+#include<mutex>
+#include<functional>
 #include"EventLoop.h"
+
+class EventLoop;
 
 class EventLoopThread
 {
 public:
-	typedef std::function<void(EventLoop*)> ThreadInitCallback;
-	EventLoopThead(const ThreadInitCallback &cb,const std::string &name=string());
+	typedef std::function<void(EventLoop*)>  ThreadInitCallback;
+
+	EventLoopThread(const ThreadInitCallback cb= ThreadInitCallback());
+
 	~EventLoopThread();
 
+	EventLoop *getLoop();
 
-Private:
+private:
+
 	void threadFunc();
 	
 	EventLoop *loop_;	
+
 	std::thread thread_;
 
 	ThreadInitCallback callback;
@@ -23,32 +31,6 @@ Private:
 	std::mutex Mutex;
 
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #endif

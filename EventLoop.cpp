@@ -39,7 +39,7 @@ void EventLoop::loop()
 		{
 			(*it)->handleEvent();
 		}
-		std::cout<<"looping"<<std::endl;
+		std::cout<<"looping\t"<<std::this_thread::get_id()<<std::endl;
 	}
 	looping=false;
 }

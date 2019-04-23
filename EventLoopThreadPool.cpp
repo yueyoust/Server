@@ -1,24 +1,45 @@
-#include"EventLoopThreadPoll.h"
-`
+#include"EventLoopThreadPool.h"
 
-EventLoopThreadPool::EventLoopThreadPool(EventLoop *baseloop,const string &nameArg)
+
+EventLoopThreadPool::EventLoopThreadPool(EventLoop *baseloop,const int numthreads)
 	:baseLoop(baseloop),
-	 name(nameArg),
-	 numThreads(0)
+	 numThreads(numthreads),
+	 next(0)
 {
 }
 
-void EventLoopThreadPool(const ThreadInitCacllback)
+
+EventLoopThreadPool::~EventLoopThreadPool()
+{
+}
+
+
+void EventLoopThreadPool::start(const ThreadInitCallback &cb)
 {
 	for(int i=0;i<numThreads;i++)
 	{
-		char buff(name.size()+32];
-		snprintf(buff,sizeof buff, "%s%d",name.c_str(),i);
-		EventLoopThread *t=new EventLoopThread(cb,buff);
+		EventLoopThread *t=new EventLoopThread(cb);
 		threads.push_back(std::unique_ptr<EventLoopThread>(t));
+		loops.push_back(t->getLoop());
 	}
+
 	if(numThreads==0&&cb)
 	{
 		cb(baseLoop);
 	}
+}
+
+
+EventLoop *EventLoopThreadPool::getNextLoop()
+{
+	baseLoop->assertInLoopThread();
+
+	EventLoop *loop=baseLoop;
+	if(!loops.empty())
+	{
+		loop=loops[next];
+		++next;
+		if(next>(loops.size()))   {next=0;}
+	}
+	return loop;
 }
