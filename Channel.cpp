@@ -18,7 +18,10 @@ void Channel::update()
 	loop->updateChannel(this);
 }
 
-
+void Channel::setFd(int fd)
+{
+	fd_=fd;
+}
 
 void Channel::handleEvent()
 {

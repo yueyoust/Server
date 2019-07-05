@@ -47,9 +47,9 @@ void AsyncLogging::append(const char *logline,int len)
 
 void AsyncLogging::threadFunc()
 {
-	std::ofstream file("text.log");
+	//std::ofstream file("text.log");
 	LogFile output(baseName_);
-	file<<"yueyou";
+	//file<<"yueyou";
 	//file.close();
 	BufferPtr newBuffer1(new Buffer);
 	BufferPtr newBuffer2(new Buffer);
@@ -78,11 +78,11 @@ void AsyncLogging::threadFunc()
 		for(auto const &str:buffersToWrite)
 		{
 			output.append(str->data(),str->length());
-			for(int i=0;i<str->length();i++)
+			/*for(int i=0;i<str->length();i++)
 			{
 				file<<str->data()[i];
-			}
-			file<<std::flush;
+			}*/
+			//file<<std::flush;
 		}
 
 		if(buffersToWrite.size()>2)

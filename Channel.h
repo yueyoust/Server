@@ -22,6 +22,8 @@ public:
 	
 	int fd(){return fd_;}
 	
+	void setFd(int fd);
+	
 	int events(){return events_;}
 
 	void set_revents(int revt){revents_=revt;}
