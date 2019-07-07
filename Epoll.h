@@ -39,7 +39,7 @@ private:
 	
 	std::vector<epoll_event> events_;
 
-	
+	std::shared_ptr<Channel> fdChannels_[MAXFDS];
 };
 
 #endif

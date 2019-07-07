@@ -4,6 +4,7 @@
 #include "EventLoop.h"
 #include "Channel.h"
 #include "EventLoopThreadPool.h"
+#include "Util.h"
 
 class  Server{
 public:
@@ -17,16 +18,16 @@ public:
 	
 	void handNewConn();
 
-	void handThisConn() { loop_->updatePoller(acceptChannel_); }
+	void handThisConn() { loop_->updateChannel(acceptChannel_); }
 
 private:
 	EventLoop *loop_;
 	int threadNum_;
-	std::unique_ptr<EventLoopThreadPool> eventLoopThreadpPool_;
+	std::unique_ptr<EventLoopThreadPool> eventLoopThreadPool_;
 	bool started_;
-	std::shared_ptr<Channel>acceptChannel_;
-	int port_;
 	int listenFd_;
+	int port_;
+	std::shared_ptr<Channel>acceptChannel_;
 	static const int MAXFDS=10000;
 };
 
