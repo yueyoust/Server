@@ -8,17 +8,16 @@
 #include "Server.h"
 #include "Util.h"
 
-Server::server(EventLoop *loop,int threadNum,int port)
+Server::Server(EventLoop *loop,int threadNum,int port)
 	:loop_(loop),
 	 threadNum_(threadNum),
 	 eventLoopThreadPool_(new EventLoopThreadPool(loop_,threadNum)),
 	 started_(false),
 	 port_(port),
-	 listenFd_(socket_bind_listen(port_))
-	 acceptChannel_(new Channel(loop_,listenFd_)),
+	 listenFd_(socket_bind_listen(port_)),
+	 acceptChannel_(new Channel(loop_,listenFd_))
 {
-	acceptChannel_->setFd(listenFd_);
-
+	//acceptChannel_->setFd(listenFd_);
 	if(setSocketNonBlocking(listenFd_)<0)
 	{
 		perror("set socket nonblock failed");
@@ -29,8 +28,9 @@ Server::server(EventLoop *loop,int threadNum,int port)
 
 void Server::start()
 {
-	eventLoopThreadPool_->start();
-	acceptChannel_->setEvents();
+//	std::function<void(EventLoop*)> func;
+	eventLoopThreadPool_->start(NULL);
+//	acceptChannel_->setEvents();
 	
 	acceptChannel_->setReadCallback(std::bind(&Server::handNewConn,this));
 		

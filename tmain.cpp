@@ -1,12 +1,11 @@
-#include <iostream>
-#include <string.h>
-#include <unistd.h>
-#include <thread>
-#include <sys/timerfd.h>
-#include "EventLoop.h"
-#include "Channel.h"
-#include "EventLoopThreadPool.h"
-#include "Server.h"
+#include<iostream>
+#include<string.h>
+#include<unistd.h>
+#include<thread>
+#include<sys/timerfd.h>
+#include"EventLoop.h"
+#include"Channel.h"
+#include"EventLoopThreadPool.h"
 //EventLoop *g_loop;
 void  timeout()
 {
@@ -17,13 +16,12 @@ int main()
 	std::function<void()>callback=timeout;
 	EventLoop loop;
 	//g_loop=&loop;
-	Server ser(&loop,3,8080);
-	ser.start();
-//	EventLoopThreadPool th(&loop,3);
-		
-//	th.start(NULL);
+	
+	EventLoopThreadPool th(&loop,3);
+	
+	th.start(NULL);
 
-/*	int timefd=::timerfd_create(CLOCK_MONOTONIC,TFD_NONBLOCK|TFD_CLOEXEC);
+	int timefd=::timerfd_create(CLOCK_MONOTONIC,TFD_NONBLOCK|TFD_CLOEXEC);
 	std::cout<<timefd;
 	Channel channel(&loop,timefd);
 	channel.setReadCallback(timeout);
@@ -35,10 +33,10 @@ int main()
 	bzero(&howlong,sizeof howlong);
 	howlong.it_value.tv_sec=5;
 	::timerfd_settime(timefd,0,&howlong,NULL);
-*/	loop.loop();
+	loop.loop();
 
 
 
 	std::cout<<"main loop"<<std::endl;
-//	::close(timefd);
+	::close(timefd);
 }

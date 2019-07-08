@@ -28,7 +28,7 @@ EventLoop* EventLoopThread::getLoop()
 void EventLoopThread::threadFunc()
 {
 	EventLoop loop;
-
+	std::cout<<"looping111111111111111111111111111 \t"<<std::this_thread::get_id()<<std::endl;
 	if(callback)
 	{
 		callback(&loop);

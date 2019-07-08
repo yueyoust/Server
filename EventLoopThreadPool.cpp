@@ -1,4 +1,5 @@
-#include"EventLoopThreadPool.h"
+#include <iostream>
+#include "EventLoopThreadPool.h"
 
 
 EventLoopThreadPool::EventLoopThreadPool(EventLoop *baseloop,const int numthreads)
@@ -18,6 +19,7 @@ void EventLoopThreadPool::start(const ThreadInitCallback &cb)
 {
 	for(int i=0;i<numThreads;i++)
 	{
+//		std::cout<<"thread pool start"<<std::endl;
 		EventLoopThread *t=new EventLoopThread(cb);
 		threads.push_back(std::unique_ptr<EventLoopThread>(t));
 		loops.push_back(t->getLoop());

@@ -22,7 +22,7 @@ public:
 	
 	int fd(){return fd_;}
 	
-	void setFd(int fd);
+	//void setFd(int fd);
 	
 	int events(){return events_;}
 
