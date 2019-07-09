@@ -31,6 +31,11 @@ void Channel::handleEvent()
 		if(readCallBack)
 			readCallBack();
 	}
+	if(revents_&POLLOUT)
+	{
+		if(writeCallBack)
+			writeCallBack();
+	}
 }
 
 

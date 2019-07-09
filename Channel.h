@@ -16,7 +16,7 @@ public:
 
 	void setReadCallback(EventCallBack callback){readCallBack=callback;}
 
-	void setWriteCallback(EventCallBack &callback){writeCallBack=callback;}
+	void setWriteCallback(EventCallBack callback){writeCallBack=callback;}
 
 	void enableReading(){events_|=kreadEvent; update();}
 

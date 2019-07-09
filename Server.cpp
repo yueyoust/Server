@@ -41,10 +41,19 @@ void rcallback(Channel* channel)
 {
 	int fd =channel->fd();
 	int buffer[4096];
-	int num=recv(fd,buffer,4096,MSG_WAITALL);
+	int num=read(fd,buffer,4096);
 	std::cout<<'\n'<<fd<<"\tbuffer\t"<<num<<std::endl;
+	//write(fd,"1",1);
+	char tbuffer[]="HTTP/1.0 404 Not Found \r\nContent-Type: text/html \r\n<HTML><HEAD><TITLE>Not Found lukas</TITLE></HEAD><BODY>Not Found</BODY></HTML>Sending file not found.";
+	write(fd,tbuffer,strlen(tbuffer));
+	//close(fd);
 	//while(1);
 
+}
+
+void wcallback(Channel* channel)
+{
+	int fd=channel->fd();
 }
 void Server::handNewConn()
 {
@@ -74,7 +83,9 @@ void Server::handNewConn()
 		//std::cout<<'\n'<<"socketac"<<accept_fd<<std::endl;
 		Channel *chann= new Channel(loop_,accept_fd);
 		chann->setReadCallback(std::bind(&rcallback,chann));
+	//	chann->setWriteCallback(std::bind(&wcallback,chann));
 		chann->enableReading();
+	//	chann->enableWriting();
 	}
 }
 
