@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <cstdlib>
 #include <cstring>
-//#include <string.h>
+#include <iostream>
 #include "Util.h"
 
 int socket_bind_listen(int port)
@@ -23,7 +23,7 @@ int socket_bind_listen(int port)
 	struct sockaddr_in server_addr;
 	bzero((char*)&server_addr,sizeof(server_addr));
 	server_addr.sin_family=AF_INET;
-	server_addr.sin_addr.s_addr=htonl(INADDR_ANY);
+	server_addr.sin_addr.s_addr=/*htonl("192.168.145.128");//&*/htonl(INADDR_ANY);
 	server_addr.sin_port=htons((unsigned short)port);
 
 	if(bind(listen_fd,(struct sockaddr *)&server_addr,sizeof(server_addr))==-1)
@@ -33,6 +33,7 @@ int socket_bind_listen(int port)
 	if(listen(listen_fd,2048)==-1)
 		return -1;
 	
+	//std::cout<<"lllllllllllllllllllllllllllllliiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiisssssssssssssssssssssssssssssssttttttttttttttttttttttttt"<<std::endl;
 	return listen_fd;
 }
 

@@ -1,12 +1,12 @@
 #include "Channel.h"
 
-const int Channel::kreadEvent=POLLIN|POLLPRI;
+const int Channel::kreadEvent=POLLIN;//|POLLPRI;
 const int Channel::kwriteEvent=POLLOUT;
 
 
 
-Channel::Channel(EventLoop *loopa,int fda)
-	:loop(loopa),
+Channel::Channel(EventLoop *loop,int fda)
+	:loop_(loop),
 	 fd_(fda),
 	 events_(0),
 	 revents_(0)
@@ -15,7 +15,7 @@ Channel::Channel(EventLoop *loopa,int fda)
 
 void Channel::update()
 {
-	loop->updateChannel(this);
+	loop_->updateChannel(this);
 }
 
 /*void Channel::setFd(int fd)

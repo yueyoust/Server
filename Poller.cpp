@@ -9,11 +9,11 @@ void Poller::poll(int timeoutMs,ChannelList *activeChannels)
 {
 	int numEvents=::poll(&*pollFds.begin(),pollFds.size(),timeoutMs);
 
-	//std::cout<<"nums of file\t"<<pollFds.size()<<'\t'<<pollFds.begin()->fd<<std::endl;
+	std::cout<<"nums of file\t"<<pollFds.size()<<'\t';
 	if(numEvents>0)
 	{
-		std::cout<<"something happened"<<std::endl;
 		fillActiveChannels(numEvents,activeChannels);
+		std::cout<<"something happened"<<std::endl;
 	}else if(numEvents==0){
 		std::cout<<"nothing happended"<<std::endl;
 	}else{
@@ -30,6 +30,7 @@ void Poller::fillActiveChannels(int numEvents,ChannelList *activeChannels)const
 		{
 			--numEvents;
 			auto ch=channels.find(pfd->fd);
+			std::cout<<pfd->fd<<'\t';
 			Channel *channel=ch->second;
 			channel->set_revents(pfd->revents);	
 			activeChannels->push_back(channel);

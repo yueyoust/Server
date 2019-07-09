@@ -4,6 +4,8 @@
 #include<functional>
 #include"EventLoop.h"
 #include<iostream>
+
+
 class EventLoop;
 class Channel{
 public:
@@ -37,7 +39,7 @@ private:
 	int events_;
 	int revents_;
 	const int fd_;
-	const EventLoop *loop;
+	const EventLoop *loop_;
 	
 	EventCallBack readCallBack;
 	EventCallBack writeCallBack;

@@ -15,7 +15,7 @@ Server::Server(EventLoop *loop,int threadNum,int port)
 	 started_(false),
 	 port_(port),
 	 listenFd_(socket_bind_listen(port_)),
-	 acceptChannel_(new Channel(loop_,listenFd_))
+	 acceptChannel_(new Channel(loop_,listenFd_)) //add file descriptor to channel
 {
 	//acceptChannel_->setFd(listenFd_);
 	if(setSocketNonBlocking(listenFd_)<0)
@@ -28,16 +28,24 @@ Server::Server(EventLoop *loop,int threadNum,int port)
 
 void Server::start()
 {
-//	std::function<void(EventLoop*)> func;
 	eventLoopThreadPool_->start(NULL);
 //	acceptChannel_->setEvents();
 	
 	acceptChannel_->setReadCallback(std::bind(&Server::handNewConn,this));
-		
-	loop_->updateChannel(acceptChannel_);
+	acceptChannel_->enableReading();
+	//loop_->updateChannel(acceptChannel_);
 	started_=true;
 }
 
+void rcallback(Channel* channel)
+{
+	int fd =channel->fd();
+	int buffer[4096];
+	int num=recv(fd,buffer,4096,MSG_WAITALL);
+	std::cout<<'\n'<<fd<<"\tbuffer\t"<<num<<std::endl;
+	//while(1);
+
+}
 void Server::handNewConn()
 {
 	struct sockaddr_in client_addr;
@@ -63,8 +71,10 @@ void Server::handNewConn()
 		setSocketNoDelay(accept_fd);
 		//shared_ptr<httpMes> req_info(new (httpMes(loop,accept_fd)));
 		//req_info->
-		std::cout<<"new connection come from fd\n";
-//		Channel chann(new Channel(*loop,accept_fd));
-//		loop_->updateChannel(chann);
+		//std::cout<<'\n'<<"socketac"<<accept_fd<<std::endl;
+		Channel *chann= new Channel(loop_,accept_fd);
+		chann->setReadCallback(std::bind(&rcallback,chann));
+		chann->enableReading();
 	}
 }
+

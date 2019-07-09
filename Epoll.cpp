@@ -106,6 +106,18 @@ std::vector<SP_Channel> Epoll::getEventsRequest(int events_num)
 }
 
 
+void Epoll::fillActiveChannels(int numEvents,ChannelList *activeChannels) const
+{
+	for(int i=0; i<numEvents;++i)
+	{
+		Channel *channel=static_cast<Channel*>(events_[i].data.ptr);
+		
+		int fd=Channel->fd();
+		ChannelMap::const_iterator it=Channels_find(fd);
+		Channel->set_revents(events_[i].events);
+		activeChannels->push_back(channel);
+	}
+}
 
 
 

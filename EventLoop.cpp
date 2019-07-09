@@ -4,9 +4,10 @@
 
 __thread EventLoop *t_loopInThisThread=0;
 
-EventLoop::EventLoop():looping(false),
-	threadId(std::this_thread::get_id()),
-	poller(new Poller(this))
+EventLoop::EventLoop()
+	:looping(false),
+	 threadId(std::this_thread::get_id()),
+	 poller(new Poller(this))
 {
 	if(t_loopInThisThread)
 	{
@@ -34,12 +35,12 @@ void EventLoop::loop()
 		activeChannels.clear();
 		//::poll(NULL,0,1000);
 		poller->poll(1000,&activeChannels);
-	
+		std::cout<<activeChannels.size()<<'\t';	
 		for(auto it =activeChannels.begin();it!=activeChannels.end();it++)
 		{
 			(*it)->handleEvent();
 		}
-		std::cout<<"looping\t"<<std::this_thread::get_id()<<std::endl;
+		std::cout<<"looping\t"<<std::this_thread::get_id()<<'\t'<<activeChannels.size()<<std::endl;
 	}
 	looping=false;
 }
@@ -52,6 +53,7 @@ void EventLoop::abortNotInLoopThread()
 
 void EventLoop::updateChannel(Channel *channel)
 {
+
 	poller->updateChannel(channel);
 }
 
