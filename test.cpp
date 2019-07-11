@@ -6,12 +6,15 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <poll.h>
+#include <string>
+#include <stdio.h>
+#include <stdlib.h>
 #include "Util.h"
 
 int main()
 {
 	
-	int tfd=socket_bind_listen(8001);
+	int tfd=socket_bind_listen(8080);
 
 	struct sockaddr_in client_addr;
 
@@ -27,8 +30,22 @@ int main()
 	accept_fd=accept(tfd,(struct sockaddr*) &client_addr,&client_addr_len);
 	char tbuffer[4096];
 	int nu=read(accept_fd,tbuffer,4096);
-	char text[]="HTTP/1.0 404 Not Found\r\nContent-Type: text/html \r\n<HTML><HEAD><TITLE>Not Found lukas</TITLE></HEAD><BODY>Not Found</BODY></HTML>Sending file not found.";	
-	write(accept_fd,text,strlen(text));
+	char text[]="HTTP/1.0 404 Not Found\r\nContent-Type: text/html \r\n\r\n<HTML><HEAD><TITLE>Not Found lukas</TITLE></HEAD><BODY>Not Found</BODY></HTML>Sending file not found.\r\n\r\n";	
+	std::string header_buff,body_buff; 
+	body_buff += "<html><title>not/title>";
+    	body_buff += "<body bgcolor=\"ffffff\">";
+    	body_buff += "404NotFound";
+    	body_buff += "<hr><em> LinYa's Web Server</em>\n</body></html>";
+	
+	header_buff += "HTTP/1.1 " + std::to_string(404) + "Not Found" + "\r\n";
+    	header_buff += "Content-Type: text/html\r\n";
+    	header_buff += "Connection: Close\r\n";
+    	header_buff += "Content-Length: " + std::to_string(body_buff.size()) + "\r\n";
+    	header_buff += "Server: LinYa's Web Server\r\n";
+    	header_buff += "\r\n";
+	
+	write(accept_fd,header_buff.c_str(),header_buff.size());
+	write(accept_fd,body_buff.c_str(),body_buff.size());
 
 	struct pollfd pf;
 	pf.fd=accept_fd;
@@ -71,7 +88,7 @@ int main()
 						if(i.revents&(POLLOUT))
 						std::cout<<"POLLOUT"<<std::endl;
 
-						write(i.fd,text,strlen(text));
+						//write(i.fd,text,strlen(text));
 
 					}
 			}

@@ -40,8 +40,8 @@ private:
 	bool looping;
 	const std::thread::id threadId;
 	
-	std::unique_ptr<Poller> poller;
-
+	std::unique_ptr<Poller> poller_;
+	//Poller* poller_;
 	ChannelList  activeChannels;
 };
 

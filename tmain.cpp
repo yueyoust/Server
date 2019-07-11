@@ -11,13 +11,33 @@ void  timeout()
 {
 	std::cout<<"timeout"<<std::endl;
 }
+
+void tfunction()
+{
+	EventLoop ll;
+	Channel *cha=new Channel(&ll,3);
+	cha->setReadCallback(timeout);
+	cha->enableReading();
+	while(1);
+}
 int main()
 {
-	std::function<void()>callback=timeout;
-	EventLoop loop;
-	//g_loop=&loop;
 	
-	EventLoopThreadPool th(&loop,3);
+	EventLoop loop;
+	
+	EventLoopThread tl;
+	/*EventLoop *rl=tl.getLoop();
+	do
+	{
+		rl=tl.getLoop();
+		std::cout<<"\\"<<std::endl;
+	}while(rl==NULL);
+	std::cout<<"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"<<std::endl;	
+*/	Channel  ch(tl.getLoop(),2);
+	ch.setReadCallback(timeout);
+	ch.enableReading();
+	while(1);
+/*	EventLoopThreadPool th(&loop,3);
 	
 	th.start(NULL);
 
@@ -38,5 +58,5 @@ int main()
 
 
 	std::cout<<"main loop"<<std::endl;
-	::close(timefd);
+	::close(timefd);*/
 }

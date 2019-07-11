@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstring>
 #include <unistd.h>
+#include <stdio.h>
 #include "Server.h"
 #include "Util.h"
 
@@ -42,18 +43,21 @@ void rcallback(Channel* channel)
 	int fd =channel->fd();
 	int buffer[4096];
 	int num=read(fd,buffer,4096);
-	std::cout<<'\n'<<fd<<"\tbuffer\t"<<num<<std::endl;
-	//write(fd,"1",1);
-	char tbuffer[]="HTTP/1.0 404 Not Found \r\nContent-Type: text/html \r\n<HTML><HEAD><TITLE>Not Found lukas</TITLE></HEAD><BODY>Not Found</BODY></HTML>Sending file not found.";
+	std::cout<<fd<<"\tbuffer\t"<<num<<buffer<<std::endl;
+	char tbuffer[]="HTTP/1.0 404 Not Found \r\nContent-Type: text/html \r\n<HTML><HEAD><TITLE>Not Found lukas</TITLE></HEAD><BODY>Not Found</BODY></HTML>\r\nSending file not found.\r\n";
 	write(fd,tbuffer,strlen(tbuffer));
 	//close(fd);
-	//while(1);
 
 }
 
 void wcallback(Channel* channel)
 {
 	int fd=channel->fd();
+	//write(fd,"1",1);
+	char tbuffer[]="HTTP/1.0 404 Not Found \r\nContent-Type: text/html \r\n<HTML><HEAD><TITLE>Not Found lukas</TITLE></HEAD><BODY>Not Found</BODY></HTML>Sending file not found.";
+	write(fd,tbuffer,strlen(tbuffer));
+	//close(fd);
+	//while(1);
 }
 void Server::handNewConn()
 {
@@ -81,7 +85,7 @@ void Server::handNewConn()
 		//shared_ptr<httpMes> req_info(new (httpMes(loop,accept_fd)));
 		//req_info->
 		//std::cout<<'\n'<<"socketac"<<accept_fd<<std::endl;
-		Channel *chann= new Channel(loop_,accept_fd);
+		Channel *chann= new Channel(loop,accept_fd);
 		chann->setReadCallback(std::bind(&rcallback,chann));
 	//	chann->setWriteCallback(std::bind(&wcallback,chann));
 		chann->enableReading();

@@ -21,6 +21,7 @@ EventLoopThread::~EventLoopThread()
 
 EventLoop* EventLoopThread::getLoop()
 {
+	while(loop_==NULL);
 	return loop_;
 }
 
@@ -28,7 +29,6 @@ EventLoop* EventLoopThread::getLoop()
 void EventLoopThread::threadFunc()
 {
 	EventLoop loop;
-	std::cout<<"looping111111111111111111111111111 \t"<<std::this_thread::get_id()<<std::endl;
 	if(callback)
 	{
 		callback(&loop);
@@ -38,8 +38,10 @@ void EventLoopThread::threadFunc()
 		std::lock_guard<std::mutex> lock(Mutex);
 		loop_=&loop;
 	}
+	std::cout<<"looping111111111111111111111111111\t"<<'\t'<<std::this_thread::get_id()<<std::endl;
 	
 	loop.loop();
+	loop_=NULL;
 }
 
 

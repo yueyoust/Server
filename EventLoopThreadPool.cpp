@@ -24,7 +24,8 @@ void EventLoopThreadPool::start(const ThreadInitCallback &cb)
 		threads.push_back(std::unique_ptr<EventLoopThread>(t));
 		loops.push_back(t->getLoop());
 	}
-
+	
+	std::cout<<"ppppppppppppppppppppppppppppppppppppppppppppppppp\t"<<threads.size()<<'\t'<<loops.size()<<std::endl;
 	if(numThreads==0&&cb)
 	{
 		cb(baseLoop);
@@ -35,7 +36,6 @@ void EventLoopThreadPool::start(const ThreadInitCallback &cb)
 EventLoop *EventLoopThreadPool::getNextLoop()
 {
 	baseLoop->assertInLoopThread();
-	//std::cout<<"pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp";
 	EventLoop *loop=baseLoop;
 	if(!loops.empty())
 	{
