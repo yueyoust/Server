@@ -4,6 +4,7 @@
 #include <netinet/in.h>
 #include <iostream>
 #include <cstring>
+#include <string>
 #include <unistd.h>
 #include <stdio.h>
 #include "Server.h"
@@ -41,12 +42,26 @@ void Server::start()
 void rcallback(Channel* channel)
 {
 	int fd =channel->fd();
-	int buffer[4096];
-	int num=read(fd,buffer,4096);
-	std::cout<<fd<<"\tbuffer\t"<<num<<buffer<<std::endl;
-	char tbuffer[]="HTTP/1.0 404 Not Found \r\nContent-Type: text/html \r\n<HTML><HEAD><TITLE>Not Found lukas</TITLE></HEAD><BODY>Not Found</BODY></HTML>\r\nSending file not found.\r\n";
-	write(fd,tbuffer,strlen(tbuffer));
-	//close(fd);
+	char fbuffer[4096];
+	int num=read(fd,fbuffer,4096);
+	std::cout<<fd<<"\tbuffer\t"<<num<<"\n\n"<<fbuffer<<std::endl;
+	
+	std::string header_buff,body_buff; 
+	body_buff += "<html><title>not</title>";
+    	body_buff += "<body bgcolor=\"ffffdd\">";
+    	body_buff += "404 Not Found";
+    	body_buff += "<hr><em> Yueyou's Web Server</em>\n</body></html>";
+	
+	header_buff += "HTTP/1.1 " + std::to_string(404) + "Not Found" + "\r\n";
+    	header_buff += "Content-Type: text/html\r\n";
+    	header_buff += "Connection: Close\r\n";
+    	header_buff += "Content-Length: " + std::to_string(body_buff.size()) + "\r\n";
+    	header_buff += "Server: yueyou's Web Server\r\n";
+    	header_buff += "\r\n";
+	
+	write(fd,header_buff.c_str(),header_buff.size());
+	write(fd,body_buff.c_str(),body_buff.size());
+	while(1);
 
 }
 

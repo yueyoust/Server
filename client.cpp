@@ -16,7 +16,8 @@ int main()
 	char buffer[4096]="sunday morning";
 	write(fd,buffer,3);
 	read(fd,buffer,4096);
-	close(fd);
 	std::cout<<buffer<<std::endl;
+	while(1);
+	close(fd);
 	return 0;
 }

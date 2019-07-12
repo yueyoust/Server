@@ -50,3 +50,8 @@ void Poller::updateChannel(Channel*channel)
 	
 }
 
+void Poller::removeChannel(Channel *channel)
+{
+	
+}
+

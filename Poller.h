@@ -18,7 +18,9 @@ public:
 
 
 	void updateChannel(Channel *channel);
-
+	
+	void removeChannel(Channel *channel);
+	
 	void poll(int timeouMs,ChannelList *activeChannels);
 
 

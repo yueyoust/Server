@@ -30,18 +30,19 @@ int main()
 	accept_fd=accept(tfd,(struct sockaddr*) &client_addr,&client_addr_len);
 	char tbuffer[4096];
 	int nu=read(accept_fd,tbuffer,4096);
+	std::cout<<nu<<'\t'<<tbuffer<<std::endl;
 	char text[]="HTTP/1.0 404 Not Found\r\nContent-Type: text/html \r\n\r\n<HTML><HEAD><TITLE>Not Found lukas</TITLE></HEAD><BODY>Not Found</BODY></HTML>Sending file not found.\r\n\r\n";	
 	std::string header_buff,body_buff; 
-	body_buff += "<html><title>not/title>";
-    	body_buff += "<body bgcolor=\"ffffff\">";
-    	body_buff += "404NotFound";
-    	body_buff += "<hr><em> LinYa's Web Server</em>\n</body></html>";
+	body_buff += "<html><title>not</title>";
+    	body_buff += "<body bgcolor=\"00ffdd\">";
+    	body_buff += "404 Not Found";
+    	body_buff += "<hr><em> Yueyou's Web Server</em>\n</body></html>";
 	
 	header_buff += "HTTP/1.1 " + std::to_string(404) + "Not Found" + "\r\n";
     	header_buff += "Content-Type: text/html\r\n";
     	header_buff += "Connection: Close\r\n";
     	header_buff += "Content-Length: " + std::to_string(body_buff.size()) + "\r\n";
-    	header_buff += "Server: LinYa's Web Server\r\n";
+    	header_buff += "Server: yueyou's Web Server\r\n";
     	header_buff += "\r\n";
 	
 	write(accept_fd,header_buff.c_str(),header_buff.size());
