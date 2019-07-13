@@ -18,9 +18,9 @@ public:
 
 	void setWriteCallback(EventCallBack callback){writeCallBack=callback;}
 
-	void enableReading(){events_|=kreadEvent; update();}
+	void enableReading(){events_|=kreadEvent;update();}
 
-	void enableWriting(){events_|=kwriteEvent; update();}
+	void enableWriting(){events_|=kwriteEvent;update();}
 	
 	int fd(){return fd_;}
 	
@@ -28,9 +28,13 @@ public:
 	
 	int events(){return events_;}
 
-	void set_revents(int revt){revents_=revt;}
+	void set_revents(int revt) {revents_=revt;}
+	
+	void set_index(int index) {index_=index;}
 
+	int index(){return index_;}
 
+	void remove();
 private:
 	static const int kreadEvent;
 	static const int kwriteEvent;
@@ -40,7 +44,8 @@ private:
 	int revents_;
 	const int fd_;
 	const EventLoop *loop_;
-	
+	int index_;
+		
 	EventCallBack readCallBack;
 	EventCallBack writeCallBack;
 };

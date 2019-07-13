@@ -40,18 +40,49 @@ void Poller::fillActiveChannels(int numEvents,ChannelList *activeChannels)const
 
 void Poller::updateChannel(Channel*channel)
 {
-	struct pollfd pfd;
-	pfd.fd=channel->fd();
-	pfd.events=channel->events();
-	pfd.revents=0;
-	pollFds.push_back(pfd);
-	channels[pfd.fd]=channel;//add to channel map;
-	std::cout<<"update channel"<<std::endl;
-	
+	if(channel->index()<0)		
+	{
+		struct pollfd pfd;
+		pfd.fd=channel->fd();
+		pfd.events=channel->events();
+		pfd.revents=0;
+		pollFds.push_back(pfd);
+		channels[pfd.fd]=channel;//add to channel map;
+		int idx=static_cast<int>(pollFds.size()-1);
+		channel->set_index(idx);
+		std::cout<<"update channel"<<std::endl;
+	}
+	else
+	{
+		int idx=channel->index();
+		struct pollfd &pfd=pollFds[idx];
+		pfd.fd=channel->fd();
+		pfd.events=static_cast<short>(channel->events());
+		pfd.revents=0;
+		std::cout<<"update existing channel"<<std::endl;
+	}
 }
 
 void Poller::removeChannel(Channel *channel)
 {
-	
+	int idx= channel->index();
+	const struct pollfd &pfd=pollFds[idx];
+	size_t n=channels.erase(channel->fd());
+	if(idx==pollFds.size()-1)
+	{
+		pollFds.pop_back();
+	}
+	else
+	{
+		int channelAtEnd=pollFds.back().fd;
+		iter_swap(pollFds.begin(),pollFds.end()-1);
+		if(channelAtEnd<0)
+		{
+			channelAtEnd=-channelAtEnd-1;
+		}
+		channels[channelAtEnd]->set_index(idx);
+		pollFds.pop_back();
+	}
+
 }
 

@@ -29,7 +29,8 @@ public:
 	bool isInLoopThread()const {return threadId==std::this_thread::get_id();}
 
 	void updateChannel(Channel *channel);
-
+	
+	void removeChannel(Channel *channel);
 private:
 	
 

@@ -44,8 +44,13 @@ void rcallback(Channel* channel)
 	int fd =channel->fd();
 	char fbuffer[4096];
 	int num=read(fd,fbuffer,4096);
-	std::cout<<fd<<"\tbuffer\t"<<num<<"\n\n"<<fbuffer<<std::endl;
 	
+	std::cout<<"\nfile descriptor\t"<<fd<<"\tbuffersize\t"<<num<<"\n\n"<<fbuffer<<std::this_thread::get_id()<<std::endl;
+	if(num==0)
+	{
+		channel->remove();
+		return ;
+	}
 	std::string header_buff,body_buff; 
 	body_buff += "<html><title>not</title>";
     	body_buff += "<body bgcolor=\"ffffdd\">";
@@ -61,16 +66,18 @@ void rcallback(Channel* channel)
 	
 	write(fd,header_buff.c_str(),header_buff.size());
 	write(fd,body_buff.c_str(),body_buff.size());
-	while(1);
+	//while(1);
 
 }
 
 void wcallback(Channel* channel)
 {
 	int fd=channel->fd();
+
+	std::cout<<"write callback is called"<<std::endl;
 	//write(fd,"1",1);
-	char tbuffer[]="HTTP/1.0 404 Not Found \r\nContent-Type: text/html \r\n<HTML><HEAD><TITLE>Not Found lukas</TITLE></HEAD><BODY>Not Found</BODY></HTML>Sending file not found.";
-	write(fd,tbuffer,strlen(tbuffer));
+	//char tbuffer[]="HTTP/1.0 404 Not Found \r\nContent-Type: text/html \r\n<HTML><HEAD><TITLE>Not Found lukas</TITLE></HEAD><BODY>Not Found</BODY></HTML>Sending file not found.";
+	//write(fd,tbuffer,strlen(tbuffer));
 	//close(fd);
 	//while(1);
 }
@@ -102,9 +109,10 @@ void Server::handNewConn()
 		//std::cout<<'\n'<<"socketac"<<accept_fd<<std::endl;
 		Channel *chann= new Channel(loop,accept_fd);
 		chann->setReadCallback(std::bind(&rcallback,chann));
-	//	chann->setWriteCallback(std::bind(&wcallback,chann));
+		chann->setWriteCallback(std::bind(&wcallback,chann));
 		chann->enableReading();
-	//	chann->enableWriting();
+		
+		chann->enableWriting();
 	}
 }
 

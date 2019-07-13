@@ -61,14 +61,16 @@ int main()
 		char buffer[4096];
 		if(l>0)
 		{	
-			std::cout<<"something\t"<<vecfd.size()<<std::endl;
+			//std::cout<<"something\t"<<vecfd.size()<<std::endl;
 			for(auto i: vecfd)
 			{
 				
 				if(i.revents>0)
 					{
 						if(i.revents&(POLLIN))
-						std::cout<<"POLLIN"<<std::endl;
+						{std::cout<<"POLLIN"<<std::endl;
+						int num=read(i.fd,buffer,4096);
+						std::cout<<"num of word has been read\t"<<num<<std::endl;}
 						if(i.revents&(POLLERR))
 						std::cout<<"POLLERR"<<std::endl;
 						if(i.revents&(POLLRDNORM))
@@ -84,8 +86,6 @@ int main()
 						if(i.revents&(POLLHUP))
 						std::cout<<"POLLHUP"<<std::endl;
 
-						int num=read(i.fd,buffer,4096);
-						std::cout<<"num of word has been read\t"<<num<<std::endl;
 						if(i.revents&(POLLOUT))
 						std::cout<<"POLLOUT"<<std::endl;
 
@@ -94,7 +94,7 @@ int main()
 					}
 			}
 		}
-		std::cout<<"\\num of Eventloop queue in poll\t"<<vecfd.size()<<std::endl;
+		//std::cout<<"\\num of Eventloop queue in poll\t"<<vecfd.size()<<std::endl;
 	}
 	
 }

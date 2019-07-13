@@ -7,6 +7,7 @@ const int Channel::kwriteEvent=POLLOUT;
 
 Channel::Channel(EventLoop *loop,int fda)
 	:loop_(loop),
+	 index_(-1),
 	 fd_(fda),
 	 events_(0),
 	 revents_(0)
@@ -18,6 +19,10 @@ void Channel::update()
 	loop_->updateChannel(this);
 }
 
+void Channel::remove()
+{
+	loop_->removeChannel(this);
+}
 /*void Channel::setFd(int fd)
 {
 	fd_ = fd;
