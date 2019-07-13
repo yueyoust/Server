@@ -41,7 +41,7 @@ EventLoop *EventLoopThreadPool::getNextLoop()
 	{
 		loop=loops[next];
 		++next;
-		if(next>(loops.size()))   {next=0;}
+		if(next>=(loops.size()))   {next=0;}
 	}
 	return loop;
 }

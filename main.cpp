@@ -7,6 +7,7 @@
 #include "Channel.h"
 #include "EventLoopThreadPool.h"
 #include "Server.h"
+#include <signal.h>
 //EventLoop *g_loop;
 void  timeout()
 {	
@@ -14,6 +15,7 @@ void  timeout()
 }	
 int main()
 {	
+	//signal(SIGPIPE,SIG_IGN);//ignore SIGPIPE;
 	std::function<void()>callback=timeout;
 	EventLoop loop;
 	//g_loop=&loop;

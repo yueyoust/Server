@@ -68,9 +68,9 @@ int main()
 				if(i.revents>0)
 					{
 						if(i.revents&(POLLIN))
-						{std::cout<<"POLLIN"<<std::endl;
+						std::cout<<"POLLIN";//<<std::endl;
 						int num=read(i.fd,buffer,4096);
-						std::cout<<"num of word has been read\t"<<num<<std::endl;}
+						//std::cout<<"num of word has been read\t"<<num<<std::endl;}
 						if(i.revents&(POLLERR))
 						std::cout<<"POLLERR"<<std::endl;
 						if(i.revents&(POLLRDNORM))
