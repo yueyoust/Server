@@ -26,7 +26,7 @@ int main()
 	
 	std::vector<struct pollfd> vecfd;
 	
-
+	std::cout<<"pid\t"<<getpid()<<std::endl;
 	accept_fd=accept(tfd,(struct sockaddr*) &client_addr,&client_addr_len);
 	char tbuffer[4096];
 	int nu=read(accept_fd,tbuffer,4096);
