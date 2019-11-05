@@ -6,6 +6,7 @@
 #include "EventLoopThreadPool.h"
 #include "Util.h"
 
+class httpMes;
 class  Server{
 public:
 	Server(EventLoop *loop,int threadNum,int port);

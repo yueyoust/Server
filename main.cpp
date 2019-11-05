@@ -15,7 +15,7 @@ void  timeout()
 }	
 int main()
 {	
-	//signal(SIGPIPE,SIG_IGN);//ignore SIGPIPE;
+	signal(SIGPIPE,SIG_IGN);//ignore SIGPIPE;
 	std::function<void()>callback=timeout;
 	EventLoop loop;
 	//g_loop=&loop;

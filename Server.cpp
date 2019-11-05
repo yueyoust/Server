@@ -5,9 +5,11 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <memory>
 #include <unistd.h>
 #include <stdio.h>
 #include "Server.h"
+#include "httpMes.h"
 #include "Util.h"
 
 Server::Server(EventLoop *loop,int threadNum,int port)
@@ -110,10 +112,11 @@ void Server::handNewConn()
 		//shared_ptr<httpMes> req_info(new (httpMes(loop,accept_fd)));
 		//req_info->
 		//std::cout<<'\n'<<"socketac"<<accept_fd<<std::endl;
-		Channel *chann= new Channel(loop,accept_fd);
-		chann->setReadCallback(std::bind(&rcallback,chann));
+		//Channel *chann= new Channel(loop,accept_fd);
+		std::shared_ptr<httpMes> hp(new httpMes(loop,accept_fd));
+		//chann->setReadCallback(std::bind(&rcallback,chann));
 		//chann->setWriteCallback(std::bind(&wcallback,chann));
-		chann->enableReading();
+		//chann->enableReading();
 		
 		//chann->enableWriting();
 	}
