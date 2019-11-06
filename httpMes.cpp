@@ -25,7 +25,7 @@ void httpMes::handleRead()
 	std::cout<<"\nfile descriptor\t"<<fd<<"\tbuffersize\t"<<num<<"\n\n"<<fbuffer<<std::this_thread::get_id()<<std::endl;
 	if(num==0)
 	{
-	//	channel->remove();
+		channel_->remove();
 		std::cout<<"channel has been removed"<<std::endl;
 		return ;
 	}

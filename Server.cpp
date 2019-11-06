@@ -113,7 +113,7 @@ void Server::handNewConn()
 		//req_info->
 		//std::cout<<'\n'<<"socketac"<<accept_fd<<std::endl;
 		//Channel *chann= new Channel(loop,accept_fd);
-		std::shared_ptr<httpMes> hp(new httpMes(loop,accept_fd));
+		httpMes *hp=(new httpMes(loop,accept_fd));
 		//chann->setReadCallback(std::bind(&rcallback,chann));
 		//chann->setWriteCallback(std::bind(&wcallback,chann));
 		//chann->enableReading();
