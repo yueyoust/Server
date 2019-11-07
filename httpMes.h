@@ -16,13 +16,18 @@ public:
 
 
 private:
+	const static int BufferSize=4096;	
+
 	EventLoop *loop_;
 
 	int fd_;
 
 	std::shared_ptr<Channel> channel_;
 
+	int  posBuffer_; 
 	
+	char Buffer_[BufferSize];	
+		
 	void handleRead();
 	
 	void handleWrite();
