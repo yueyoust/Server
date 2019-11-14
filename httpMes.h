@@ -7,6 +7,13 @@
 #include "EventLoop.h"
 #include "Channel.h"
 
+
+enum processState{
+	STATE_REQUEST_LINE=1,
+	STATE_REQUEST_HEADER,
+	STATE_REQUEST_BODY,
+	STATE_REQUEST_COMPLETED
+};
 class httpMes
 {
 public:
@@ -21,19 +28,30 @@ private:
 	EventLoop *loop_;
 
 	int fd_;
+	
+	processState state_;
 
+	std::string unparsedStr;
+	
+	std::map<std::string,std::string> httpHeaders_;	
+	
+	std::string httpRequestBody_;
 	std::shared_ptr<Channel> channel_;
 
 	int  posBuffer_; 
 	
-	char Buffer_[BufferSize];	
+	char fBuffer_[BufferSize];	
 		
 	void handleRead();
 	
 	void handleWrite();
 	
 	void handleConn();
-
+	
+	processState parseRequestLine(std::istringstream &requestLine);
+	processState parseRequestHeader(std::string &hstr);
+	processState parseRequestBody();
+	void onResponse();
 };
 
 #endif
