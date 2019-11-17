@@ -2,8 +2,39 @@
 #include <time.h>
 #include <stdio.h>
 
+Timer::Time()
+{
+}
+
+Timer::Timer(std::shared<httpMes> request,int64_t timeoutMs)
+	:httpRequest_(request),
+	 latestRefreshTime_(new int(0))
+{
+	struct timeval now;
+	gettimeofday(&now,NULL);
+	
+	*latestRefreshTime_=now.tv_sec*1000*1000+now.tv_usec;
+}
+
+Timer::~Timer()
+{
+	struct timeval now;
+	gettimeofday(&now,NULL);
+
+	int64_t timeNow=now.tv_sec*1000*1000+now.tv_usec;
+	if(latestRefreshTime+timeoutMs>timeNow)
+	{
+		cout<<"timer expired"<<std::endl;
+	}	
+
+}
 
 
+
+
+TimeQueue::TimeQueue()
+
+{}
 
 
 
