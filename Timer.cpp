@@ -35,6 +35,10 @@ void Timer::refresh()
 	timerQueue_->push(*this);
 }
 
+void Timer::handleExpireEvent()
+{
+	timerQueue_->handleExpireTimer();
+}
 int64_t Timer::getInternalTime()
 {
 	int64_t tim=*latestRefreshTime_;
@@ -59,8 +63,7 @@ Timer::~Timer()
 TimerQueue::TimerQueue(int timerQueueSize)
 	:timerQueue_(timerQueueSize,std::vector<Timer>()),
 	 TimerQueueSize(timerQueueSize),
-	 nowTimerQueuePos_(0),
-	 Mutex_()
+	 nowTimerQueuePos_(0)
 {
 	
 }

@@ -22,6 +22,8 @@ public:
 	void refresh();
 
 	int64_t getInternalTime();
+	
+	void handleExpireEvent();
 
 	~Timer();
 private:
@@ -49,7 +51,7 @@ public:
 private:
 	int TimerQueueSize;
 	
-	std::mutex Mutex_;
+	static std::mutex Mutex_;
 
 	typedef std::vector<std::vector<Timer>> TimeQueue;
 	
@@ -58,8 +60,7 @@ private:
 	int nowTimerQueuePos_;
 };
 
-
-
+//std::mutex TimerQueue::Mutex_;
 
 
 class Timestamp{

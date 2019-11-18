@@ -26,8 +26,8 @@ int main()
 	newvalue.it_value.tv_sec=now.tv_sec+3;
 	newvalue.it_value.tv_nsec=now.tv_nsec;
 
-	newvalue.it_interval.tv_sec=1;
-	newvalue.it_interval.tv_nsec=0;
+	newvalue.it_interval.tv_sec=0;
+	newvalue.it_interval.tv_nsec=100*1000;
 
 	timerfd_settime(tfd,TFD_TIMER_ABSTIME,&newvalue,NULL);
 
