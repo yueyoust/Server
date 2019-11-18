@@ -1,55 +1,62 @@
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef __TIMER_H_
+#define __TIMER_H_
 #include <string>
 #include <sys/time.h>
 #include <vector>
+#include <mutex>
 #include "httpMes.h"
+
+
 
 class httpMes;
 
+class TimerQueue;
+
 class Timer{
 	
-public
+public:
 	Timer();
 	
-	Timer(std::shared_ptr<httpMes> request,int64_t timeout);
+	Timer(std::shared_ptr<httpMes> request,int64_t timeoutSec);
 	
 	void refresh();
+
+	int64_t getInternalTime();
+
 	~Timer();
 private:
 		
 	int64_t *latestRefreshTime_;
 	
+	int64_t timeoutSec_;	
+
 	std::shared_ptr<httpMes> httpRequest_;
-	static TimerQueue timerQueue
+
+	TimerQueue *timerQueue_;
 };
 
 
 class TimerQueue
 {
 public:
-	TimerQueue();
+	TimerQueue(int TimerQueueSize);
 	
-	handleExpireTimer();
+	~TimerQueue();
+	void handleExpireTimer();//100ms per slot;
 
-	void push();
+	void push(Timer &tim);
+
 private:
-	const static int TimerQueueSize=100;
-	typedef std::vector<Timer> TimeQueue;
+	int TimerQueueSize;
 	
-	TimeQueue timerQueue_[TimerQueueSize];
+	std::mutex Mutex_;
+
+	typedef std::vector<std::vector<Timer>> TimeQueue;
 	
-	int nowTimerPos_;
-}
-
-
-
-
-
-
-
-
-
+	TimeQueue timerQueue_;
+	
+	int nowTimerQueuePos_;
+};
 
 
 
@@ -71,17 +78,6 @@ private:
 	
 	int64_t microSecondsSinceEpoch_;
 };
-
-
-
-
-
-
-
-
-
-
-
 
 
 

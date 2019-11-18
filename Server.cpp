@@ -7,7 +7,9 @@
 #include <string>
 #include <memory>
 #include <unistd.h>
+#include <sys/timerfd.h>
 #include <stdio.h>
+#include "Timer.h"
 #include "Server.h"
 #include "httpMes.h"
 #include "Util.h"
@@ -88,10 +90,25 @@ void wcallback(Channel* channel)
 }
 void Server::handNewConn()
 {
+	int tfd=timerfd_create(CLOCK_REALTIME,0);
+        struct itimerspec newvalue;
+        struct timespec now;
+        clock_gettime(CLOCK_REALTIME,&now);
+
+        newvalue.it_value.tv_sec=now.tv_sec+3;
+        newvalue.it_value.tv_nsec=now.tv_nsec;
+
+        newvalue.it_interval.tv_sec=1;
+        newvalue.it_interval.tv_nsec=0;
+
+        timerfd_settime(tfd,TFD_TIMER_ABSTIME,&newvalue,NULL);
+
+	
 	struct sockaddr_in client_addr;
 	memset(&client_addr,0, sizeof(struct sockaddr_in));
 	socklen_t client_addr_len =sizeof(client_addr);
 	int accept_fd=0;
+	
 	while((accept_fd=accept(listenFd_ ,(struct sockaddr*) &client_addr,&client_addr_len))>0)
 	{
 		EventLoop *loop=eventLoopThreadPool_->getNextLoop();

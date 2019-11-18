@@ -6,6 +6,7 @@ httpMes::httpMes(EventLoop *loop,int connfd)
 	 fd_(connfd),
 	 channel_(new Channel(loop,connfd)),
 	 state_(STATE_REQUEST_LINE),
+	 connectionState_(true),
 	 posBuffer_(0)
 {
 	channel_->setReadCallback(std::bind(&httpMes::handleRead,this));

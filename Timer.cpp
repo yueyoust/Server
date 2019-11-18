@@ -2,53 +2,97 @@
 #include <time.h>
 #include <stdio.h>
 
-Timer::Time()
+Timer::Timer()
 {
+;
 }
 
-Timer::Timer(std::shared<httpMes> request,int64_t timeoutMs)
+Timer::Timer(std::shared_ptr<httpMes> request,int64_t timeoutSec=20)
 	:httpRequest_(request),
-	 latestRefreshTime_(new int(0))
+	 timeoutSec_(timeoutSec),
+	 latestRefreshTime_(new int64_t(0))
+	// timerQueue_(static_cast<int>10*timeoutSec)
 {
+	if(timerQueue_==NULL)
+	{
+		timerQueue_= new TimerQueue(20);;//(static_cast<int>10*timeoutSec);
+	}
 	struct timeval now;
+
 	gettimeofday(&now,NULL);
 	
 	*latestRefreshTime_=now.tv_sec*1000*1000+now.tv_usec;
 }
 
+void Timer::refresh()
+{
+	struct timeval now;
+
+	gettimeofday(&now,NULL);
+	
+	*latestRefreshTime_=now.tv_sec*1000*1000+now.tv_usec;
+
+	timerQueue_->push(*this);
+}
+
+int64_t Timer::getInternalTime()
+{
+	int64_t tim=*latestRefreshTime_;
+	return tim;
+}
 Timer::~Timer()
 {
 	struct timeval now;
+
 	gettimeofday(&now,NULL);
 
 	int64_t timeNow=now.tv_sec*1000*1000+now.tv_usec;
-	if(latestRefreshTime+timeoutMs>timeNow)
+
+	if(*latestRefreshTime_/1000/1000+timeoutSec_<=timeNow)
 	{
-		cout<<"timer expired"<<std::endl;
+		std::cout<<"timer expired"<<std::endl;
+		delete latestRefreshTime_;
 	}	
 
 }
 
+TimerQueue::TimerQueue(int timerQueueSize)
+	:timerQueue_(timerQueueSize,std::vector<Timer>()),
+	 TimerQueueSize(timerQueueSize),
+	 nowTimerQueuePos_(0),
+	 Mutex_()
+{
+	
+}
 
 
 
-TimeQueue::TimeQueue()
-
-{}
-
-
+TimerQueue::~TimerQueue()
+{
+}
 
 
+void TimerQueue::handleExpireTimer()
+{
+	timerQueue_[nowTimerQueuePos_].clear();
+	std::lock_guard<std::mutex> lock(Mutex_);
+
+	nowTimerQueuePos_++;
+
+	if(nowTimerQueuePos_>=TimerQueueSize)
+	nowTimerQueuePos_++;
+}
 
 
-
-
-
-
-
-
-
-
+void TimerQueue::push(Timer &tim)
+{	
+	std::lock_guard<std::mutex> lock(Mutex_);
+	
+	int pos=nowTimerQueuePos_-1;
+	if(pos<0)			//queue behind nowTimerQueuePos_
+		pos=TimerQueueSize-1;
+	timerQueue_[pos].push_back(tim);
+}
 
 
 

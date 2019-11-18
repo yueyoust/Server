@@ -16,6 +16,32 @@ void  timeout()
 }	
 int main()
 {
+	//Timer tmn(NULL,);
+	
+	int tfd=timerfd_create(CLOCK_REALTIME,0);
+	struct itimerspec newvalue;
+	struct timespec now;
+	clock_gettime(CLOCK_REALTIME,&now);
+	
+	newvalue.it_value.tv_sec=now.tv_sec+3;
+	newvalue.it_value.tv_nsec=now.tv_nsec;
+
+	newvalue.it_interval.tv_sec=1;
+	newvalue.it_interval.tv_nsec=0;
+
+	timerfd_settime(tfd,TFD_TIMER_ABSTIME,&newvalue,NULL);
+
+	struct pollfd pfd;
+	pfd.fd=tfd;
+	pfd.events=POLLIN||POLLPRI||POLLRDNORM;
+	while(true)
+	{
+		::poll(&pfd,1,10000);
+		char buff[90];
+		read(tfd,buff,90);
+		std::cout<<"timer was triggered\n";
+	}
+	
 	Timestamp time=Timestamp::now();
 	std::cout<<time.toString()<<std::endl;;
 	signal(SIGPIPE,SIG_IGN);//ignore SIGPIPE;

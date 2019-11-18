@@ -14,13 +14,17 @@ enum processState{
 	STATE_REQUEST_BODY,
 	STATE_REQUEST_COMPLETED
 };
+
 class httpMes
 {
 public:
 	httpMes(EventLoop *loop,int connfd);
 
 	~httpMes() {close(fd_);}
+	
+	bool isValid(){return connectionState_;}
 
+	void setHttpConnectionState(bool state){connectionState_=state;}
 
 private:
 	const static int BufferSize=4096;	
@@ -29,6 +33,7 @@ private:
 
 	int fd_;
 	
+	bool connectionState_;
 	processState state_;
 
 	std::string unparsedStr;
@@ -51,6 +56,7 @@ private:
 	processState parseRequestLine(std::istringstream &requestLine);
 	processState parseRequestHeader(std::string &hstr);
 	processState parseRequestBody();
+	
 	void onResponse();
 };
 
