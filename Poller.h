@@ -26,12 +26,15 @@ public:
 
 private:
 	typedef std::map<int,Channel *> ChannelMap;
+
 	typedef std::vector<struct pollfd> PollFdList;
 
 	void fillActiveChannels(int numEvents,ChannelList *activeChannels) const;
 
 	EventLoop *ownerLoop;
+
 	PollFdList pollFds;
+
 	ChannelMap channels;
 
 

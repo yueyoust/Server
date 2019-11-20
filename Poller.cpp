@@ -1,9 +1,15 @@
 #include"Poller.h"
 #include"Channel.h"
+
+
+
+
+
 Poller::Poller(EventLoop*loop)
-	: ownerLoop(loop){}
+	: ownerLoop(loop)
+{
 
-
+}
 
 void Poller::poll(int timeoutMs,ChannelList *activeChannels)
 {
@@ -31,6 +37,8 @@ void Poller::fillActiveChannels(int numEvents,ChannelList *activeChannels)const
 			--numEvents;
 			auto ch=channels.find(pfd->fd);
 		//	std::cout<<pfd->fd<<'\t';
+			if(ch->second==NULL)
+				continue;
 			Channel *channel=ch->second;
 			channel->set_revents(pfd->revents);	
 			activeChannels->push_back(channel);

@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include "EventLoop.h"
 #include "Channel.h"
-
+#include "Timer.h"
 
 enum processState{
 	STATE_REQUEST_LINE=1,
@@ -15,16 +15,20 @@ enum processState{
 	STATE_REQUEST_COMPLETED
 };
 
+class Timer;
+class TimerQueue;
 class httpMes
 {
 public:
-	httpMes(EventLoop *loop,int connfd);
+	httpMes(EventLoop *loop,TimerQueue *timerQueue,int connfd);
 
 	~httpMes() {close(fd_);}
 	
 	bool isValid(){return connectionState_;}
 
 	void setHttpConnectionState(bool state){connectionState_=state;}
+
+	void handleClose();	
 
 private:
 	const static int BufferSize=4096;	
@@ -41,19 +45,24 @@ private:
 	std::map<std::string,std::string> httpHeaders_;	
 	
 	std::string httpRequestBody_;
+
 	std::shared_ptr<Channel> channel_;
 
 	int  posBuffer_; 
 	
 	char fBuffer_[BufferSize];	
-		
+
+	TimerQueue *timerQueue_;	
+
+	Timer *timer_;	
+
 	void handleRead();
 	
 	void handleWrite();
 	
 	void handleConn();
 
-	void handleClose();	
+
 	processState parseRequestLine(std::istringstream &requestLine);
 	processState parseRequestHeader(std::string &hstr);
 	processState parseRequestBody();

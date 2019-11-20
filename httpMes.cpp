@@ -1,17 +1,22 @@
 #include <sstream>
 #include "httpMes.h"
 #include "Server.h"
-httpMes::httpMes(EventLoop *loop,int connfd)
+httpMes::httpMes(EventLoop *loop,TimerQueue *timerQueue,int connfd)
 	:loop_(loop),
 	 fd_(connfd),
 	 channel_(new Channel(loop,connfd)),
 	 state_(STATE_REQUEST_LINE),
 	 connectionState_(true),
-	 posBuffer_(0)
+	 posBuffer_(0),
+	 timerQueue_(timerQueue),
+	 timer_(new Timer(this,timerQueue_,10))
+
 {
 	channel_->setReadCallback(std::bind(&httpMes::handleRead,this));
 	//channel_->setWriteCallback(std::bind(&httpMes::handleWrite,this));
-	channel_->enableReading();
+	channel_->enableReading();	
+	std::cout<<"http %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<std::endl;
+	//timer_->refresh();
 }
 
 
@@ -28,9 +33,11 @@ void httpMes::handleRead()
 	if(num==0||!isValid())
 	{
 		handleClose();
-		std::cout<<"channel has been removed"<<std::endl;
+		setHttpConnectionState(false);
+		std::cout<<"channel has been removed\t--file descriptor\t"<<fd<<std::endl;
 		return ;
-	}
+	}else timer_->refresh();
+	
 	
 	if(state_==STATE_REQUEST_LINE)
 	{

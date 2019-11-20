@@ -11,27 +11,33 @@ Timer::Timer(httpMes *request,TimerQueue *tmq,int64_t timeoutSec=10)
 	:httpRequest_(request),
 	 timeoutSec_(timeoutSec),
 	 latestRefreshTime_(new int64_t(0)),
-	 timerQueue_(tmq)
+	 timerQueue_(tmq),
+	 nowTimerQueuePos_(new int(timerQueue_->index()))
 {
 /*	if(timerQueue_==NULL)
 	{
 		timerQueue_= new TimerQueue(20);;//(static_cast<int>10*timeoutSec);
 	}*/
-	struct timeval now;
+	//struct timeval now;
 
-	gettimeofday(&now,NULL);
+	//gettimeofday(&now,NULL);
 	
-	*latestRefreshTime_=now.tv_sec*1000*1000+now.tv_usec;
+	//*latestRefreshTime_=now.tv_sec*1000*1000+now.tv_usec;
 
 	timerQueue_->push(*this);
+	//refresh();
 }
 
 void Timer::refresh()
 {
-	struct timeval now;
 
+	if(*nowTimerQueuePos_==timerQueue_->index())
+		return;
+	*nowTimerQueuePos_=timerQueue_->index();
+
+	struct timeval now;
 	gettimeofday(&now,NULL);
-	
+
 	*latestRefreshTime_=now.tv_sec*1000*1000+now.tv_usec;
 
 	timerQueue_->push(*this);
@@ -55,11 +61,14 @@ Timer::~Timer()
 
 	int64_t timeNow=now.tv_sec*1000*1000+now.tv_usec;
 */
-	if((*latestRefreshTime_)/1000/1000+timeoutSec_<=timerQueue_->time()/1000/1000)
+//	if((*latestRefreshTime_)/1000/1000+timeoutSec_<=timerQueue_->time()/1000/1000)
+	if(*nowTimerQueuePos_-1==timerQueue_->index())
 	{
-		std::cout<<"timer ###################################################################### expired"<<std::endl;
-
+		std::cout<<"timer ###################################################################### expired\t"<<__FILE__<<":"<<__LINE__<<std::endl;
+		if(httpRequest_->isValid())	
+		httpRequest_->handleClose();
 		delete latestRefreshTime_;
+		delete nowTimerQueuePos_;
 	}	
 }
 

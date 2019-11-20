@@ -33,7 +33,7 @@ Server::Server(EventLoop *loop,int threadNum,int port)
 
 	timerQueue_=(new TimerQueue(tloop,10*10)); 
 
-	Timer *tp(new Timer(NULL,timerQueue_,10));		
+	//Timer *tp(new Timer(NULL,timerQueue_,10));		
 	
 }
 
@@ -114,7 +114,6 @@ void Server::handNewConn()
 	socklen_t client_addr_len =sizeof(client_addr);
 	int accept_fd=0;
 	
-	Timer *tpi(new Timer(NULL,timerQueue_,10));	
 	while((accept_fd=accept(listenFd_ ,(struct sockaddr*) &client_addr,&client_addr_len))>0)
 	{
 		EventLoop *loop=eventLoopThreadPool_->getNextLoop();
@@ -136,7 +135,8 @@ void Server::handNewConn()
 		//req_info->
 		//std::cout<<'\n'<<"socketac"<<accept_fd<<std::endl;
 		//Channel *chann= new Channel(loop,accept_fd);
-		httpMes *hp=(new httpMes(loop,accept_fd));
+
+		httpMes *hp=(new httpMes(loop,timerQueue_,accept_fd));
 		
 		//chann->setReadCallback(std::bind(&rcallback,chann));
 		//chann->setWriteCallback(std::bind(&wcallback,chann));

@@ -27,13 +27,16 @@ public:
 	~Timer();
 private:
 		
-	int64_t *latestRefreshTime_;
+	int64_t *latestRefreshTime_;//to prevent the same timer being pushed into same slot more than twice
 	
 	int64_t timeoutSec_;	
 
 	httpMes *httpRequest_;
 
 	TimerQueue *timerQueue_;
+	
+	int *nowTimerQueuePos_;
+
 };
 
 
@@ -44,6 +47,8 @@ public:
 	
 	~TimerQueue();
 	
+	int index(){return nowTimerQueuePos_;}
+
 	int64_t time(){return nowTime_;}
 
 	void push(Timer &tim);
