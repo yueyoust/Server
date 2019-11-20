@@ -5,7 +5,7 @@
 #include "Channel.h"
 #include "EventLoopThreadPool.h"
 #include "Util.h"
-
+#include "Timer.h"
 class httpMes;
 class  Server{
 public:
@@ -28,7 +28,7 @@ private:
 	bool started_;
 	int port_;
 	int listenFd_;
-	
+	TimerQueue *timerQueue_;
 	//std::shared_ptr<Channel>acceptChannel_;
 	Channel *acceptChannel_;
 	static const int MAXFDS=10000;

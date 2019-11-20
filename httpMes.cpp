@@ -14,14 +14,20 @@ httpMes::httpMes(EventLoop *loop,int connfd)
 	channel_->enableReading();
 }
 
+
+void httpMes::handleClose()
+{	
+	channel_->remove();
+	close(fd_);
+}
 void httpMes::handleRead()
 {
 
 	int fd =fd_;	
 	int num=read(fd,fBuffer_,4096);
-	if(num==0)
+	if(num==0||!isValid())
 	{
-		channel_->remove();
+		handleClose();
 		std::cout<<"channel has been removed"<<std::endl;
 		return ;
 	}

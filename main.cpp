@@ -18,7 +18,7 @@ int main()
 {
 	//Timer tmn(NULL,);
 	
-	int tfd=timerfd_create(CLOCK_REALTIME,0);
+/*	int tfd=timerfd_create(CLOCK_REALTIME,0);
 	struct itimerspec newvalue;
 	struct timespec now;
 	clock_gettime(CLOCK_REALTIME,&now);
@@ -41,7 +41,7 @@ int main()
 		read(tfd,buff,90);
 		std::cout<<"timer was triggered\n";
 	}
-	
+*/	
 	Timestamp time=Timestamp::now();
 	std::cout<<time.toString()<<std::endl;;
 	signal(SIGPIPE,SIG_IGN);//ignore SIGPIPE;

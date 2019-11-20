@@ -52,7 +52,8 @@ private:
 	void handleWrite();
 	
 	void handleConn();
-	
+
+	void handleClose();	
 	processState parseRequestLine(std::istringstream &requestLine);
 	processState parseRequestHeader(std::string &hstr);
 	processState parseRequestBody();

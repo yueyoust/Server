@@ -35,12 +35,12 @@ void EventLoop::loop()
 		activeChannels.clear();
 		//::poll(NULL,0,1000);
 		poller_->poll(1000,&activeChannels);
-		std::cout<<activeChannels.size()<<'\t';	
+//		std::cout<<activeChannels.size()<<'\t';	
 		for(auto it =activeChannels.begin();it!=activeChannels.end();it++)
 		{
 			(*it)->handleEvent();
 		}
-		std::cout<<"looping\t"<<std::this_thread::get_id()<<'\t'<<activeChannels.size()<<std::endl;
+	//	std::cout<<"looping\t"<<std::this_thread::get_id()<<'\t'<<activeChannels.size()<<std::endl;
 	}
 	looping=false;
 }

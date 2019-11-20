@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <sys/timerfd.h>
 #include <stdio.h>
-#include "Timer.h"
 #include "Server.h"
 #include "httpMes.h"
 #include "Util.h"
@@ -20,6 +19,7 @@ Server::Server(EventLoop *loop,int threadNum,int port)
 	 eventLoopThreadPool_(new EventLoopThreadPool(loop_,threadNum)),
 	 started_(false),
 	 port_(port),
+	 timerQueue_(NULL),
 	 listenFd_(socket_bind_listen(port_)),
 	 acceptChannel_(new Channel(loop_,listenFd_)) //add file descriptor to channel
 {
@@ -29,6 +29,12 @@ Server::Server(EventLoop *loop,int threadNum,int port)
 		perror("set socket nonblock failed");
 		abort();
 	}
+	EventLoop *tloop=eventLoopThreadPool_->getNextLoop();	
+
+	timerQueue_=(new TimerQueue(tloop,10*10)); 
+
+	Timer *tp(new Timer(NULL,timerQueue_,10));		
+	
 }
 
 
@@ -90,7 +96,7 @@ void wcallback(Channel* channel)
 }
 void Server::handNewConn()
 {
-	int tfd=timerfd_create(CLOCK_REALTIME,0);
+/*	int tfd=timerfd_create(CLOCK_REALTIME,0);
         struct itimerspec newvalue;
         struct timespec now;
         clock_gettime(CLOCK_REALTIME,&now);
@@ -101,14 +107,14 @@ void Server::handNewConn()
         newvalue.it_interval.tv_sec=1;
         newvalue.it_interval.tv_nsec=0;
 
-        timerfd_settime(tfd,TFD_TIMER_ABSTIME,&newvalue,NULL);
+        timerfd_settime(tfd,TFD_TIMER_ABSTIME,&newvalue,NULL);*/
 
-	
 	struct sockaddr_in client_addr;
 	memset(&client_addr,0, sizeof(struct sockaddr_in));
 	socklen_t client_addr_len =sizeof(client_addr);
 	int accept_fd=0;
 	
+	Timer *tpi(new Timer(NULL,timerQueue_,10));	
 	while((accept_fd=accept(listenFd_ ,(struct sockaddr*) &client_addr,&client_addr_len))>0)
 	{
 		EventLoop *loop=eventLoopThreadPool_->getNextLoop();
@@ -131,6 +137,7 @@ void Server::handNewConn()
 		//std::cout<<'\n'<<"socketac"<<accept_fd<<std::endl;
 		//Channel *chann= new Channel(loop,accept_fd);
 		httpMes *hp=(new httpMes(loop,accept_fd));
+		
 		//chann->setReadCallback(std::bind(&rcallback,chann));
 		//chann->setWriteCallback(std::bind(&wcallback,chann));
 		//chann->enableReading();

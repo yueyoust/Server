@@ -1,5 +1,5 @@
-#ifndef __TIMER_H_
-#define __TIMER_H_
+#ifndef _MYTIMER_H_
+#define _MYTIMER_H_
 #include <string>
 #include <sys/time.h>
 #include <vector>
@@ -17,14 +17,13 @@ class Timer{
 public:
 	Timer();
 	
-	Timer(std::shared_ptr<httpMes> request,int64_t timeoutSec);
+	Timer(httpMes *request,TimerQueue *tmq,int64_t timeoutSec);
 	
 	void refresh();
 
 	int64_t getInternalTime();
 	
-	void handleExpireEvent();
-
+	//static void handleExpireEvent();
 	~Timer();
 private:
 		
@@ -32,7 +31,7 @@ private:
 	
 	int64_t timeoutSec_;	
 
-	std::shared_ptr<httpMes> httpRequest_;
+	httpMes *httpRequest_;
 
 	TimerQueue *timerQueue_;
 };
@@ -41,23 +40,29 @@ private:
 class TimerQueue
 {
 public:
-	TimerQueue(int TimerQueueSize);
+	TimerQueue(EventLoop *loop,int TimerQueueSize);
 	
 	~TimerQueue();
-	void handleExpireTimer();//100ms per slot;
+
 
 	void push(Timer &tim);
+
+	std::mutex Mutex_;
 
 private:
 	int TimerQueueSize;
 	
-	static std::mutex Mutex_;
-
 	typedef std::vector<std::vector<Timer>> TimeQueue;
 	
 	TimeQueue timerQueue_;
 	
+	EventLoop *loop_;
+	
+	Channel *channel_;
+
 	int nowTimerQueuePos_;
+
+	void handleExpireTimer();	//100ms per slot;
 };
 
 //std::mutex TimerQueue::Mutex_;

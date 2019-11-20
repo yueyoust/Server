@@ -1,27 +1,29 @@
 #include "Timer.h"
 #include <time.h>
 #include <stdio.h>
-
+#include <sys/timerfd.h>
 Timer::Timer()
 {
 ;
 }
 
-Timer::Timer(std::shared_ptr<httpMes> request,int64_t timeoutSec=20)
+Timer::Timer(httpMes *request,TimerQueue *tmq,int64_t timeoutSec=10)
 	:httpRequest_(request),
 	 timeoutSec_(timeoutSec),
-	 latestRefreshTime_(new int64_t(0))
-	// timerQueue_(static_cast<int>10*timeoutSec)
+	 latestRefreshTime_(new int64_t(0)),
+	 timerQueue_(tmq)
 {
-	if(timerQueue_==NULL)
+/*	if(timerQueue_==NULL)
 	{
 		timerQueue_= new TimerQueue(20);;//(static_cast<int>10*timeoutSec);
-	}
+	}*/
 	struct timeval now;
 
 	gettimeofday(&now,NULL);
 	
 	*latestRefreshTime_=now.tv_sec*1000*1000+now.tv_usec;
+
+	timerQueue_->push(*this);
 }
 
 void Timer::refresh()
@@ -35,10 +37,10 @@ void Timer::refresh()
 	timerQueue_->push(*this);
 }
 
-void Timer::handleExpireEvent()
+/*static void Timer::handleExpireEvent()
 {
 	timerQueue_->handleExpireTimer();
-}
+}*/
 int64_t Timer::getInternalTime()
 {
 	int64_t tim=*latestRefreshTime_;
@@ -46,26 +48,51 @@ int64_t Timer::getInternalTime()
 }
 Timer::~Timer()
 {
+	std::cout<<"yueyou******************************************************************"<<std::endl;
 	struct timeval now;
 
 	gettimeofday(&now,NULL);
 
 	int64_t timeNow=now.tv_sec*1000*1000+now.tv_usec;
 
-	if(*latestRefreshTime_/1000/1000+timeoutSec_<=timeNow)
+	if((*latestRefreshTime_)/1000/1000+timeoutSec_<=timeNow/1000/1000)
 	{
-		std::cout<<"timer expired"<<std::endl;
+		std::cout<<"timer ###################################################################### expired"<<std::endl;
 		delete latestRefreshTime_;
 	}	
-
 }
 
-TimerQueue::TimerQueue(int timerQueueSize)
+TimerQueue::TimerQueue(EventLoop *loop,int timerQueueSize)
 	:timerQueue_(timerQueueSize,std::vector<Timer>()),
 	 TimerQueueSize(timerQueueSize),
-	 nowTimerQueuePos_(0)
+	 loop_(loop),
+	 nowTimerQueuePos_(0),
+	 channel_(NULL)
 {
+	int tfd=timerfd_create(CLOCK_REALTIME,0);
+
+        struct itimerspec newvalue;
+
+        struct timespec now;
+
+        clock_gettime(CLOCK_REALTIME,&now);
+
+        newvalue.it_value.tv_sec=now.tv_sec+3;
+        newvalue.it_value.tv_nsec=now.tv_nsec;
+
+        newvalue.it_interval.tv_sec=0;
+
+        newvalue.it_interval.tv_nsec=100*1000*1000;
+
+        timerfd_settime(tfd,TFD_TIMER_ABSTIME,&newvalue,NULL);
 	
+	channel_=new Channel(loop_,tfd);
+
+	channel_->setReadCallback(std::bind(&TimerQueue::handleExpireTimer,this));
+
+	channel_->enableReading();
+	std::cout<<"******************************************************"<<std::endl;
+
 }
 
 
@@ -77,24 +104,34 @@ TimerQueue::~TimerQueue()
 
 void TimerQueue::handleExpireTimer()
 {
-	timerQueue_[nowTimerQueuePos_].clear();
+
+	if(channel_==NULL)
+		return ;
+	int fd=channel_->fd();
+	int buff[10];
+	read(fd,buff,10);
 	std::lock_guard<std::mutex> lock(Mutex_);
+	timerQueue_[nowTimerQueuePos_].clear();
+
 
 	nowTimerQueuePos_++;
 
 	if(nowTimerQueuePos_>=TimerQueueSize)
-	nowTimerQueuePos_++;
+		nowTimerQueuePos_=0;
+	std::cout<<"handle Expire Timer\t\t"<<nowTimerQueuePos_<<std::endl;
+	
 }
 
 
 void TimerQueue::push(Timer &tim)
 {	
 	std::lock_guard<std::mutex> lock(Mutex_);
-	
+
 	int pos=nowTimerQueuePos_-1;
 	if(pos<0)			//queue behind nowTimerQueuePos_
 		pos=TimerQueueSize-1;
 	timerQueue_[pos].push_back(tim);
+	std::cout<<"NowTimerQueuePos\t\t"<<nowTimerQueuePos_<<std::endl;
 }
 
 
