@@ -49,15 +49,16 @@ int64_t Timer::getInternalTime()
 Timer::~Timer()
 {
 	std::cout<<"yueyou******************************************************************"<<std::endl;
-	struct timeval now;
+/*	struct timeval now;
 
 	gettimeofday(&now,NULL);
 
 	int64_t timeNow=now.tv_sec*1000*1000+now.tv_usec;
-
-	if((*latestRefreshTime_)/1000/1000+timeoutSec_<=timeNow/1000/1000)
+*/
+	if((*latestRefreshTime_)/1000/1000+timeoutSec_<=timerQueue_->time()/1000/1000)
 	{
 		std::cout<<"timer ###################################################################### expired"<<std::endl;
+
 		delete latestRefreshTime_;
 	}	
 }
@@ -91,6 +92,9 @@ TimerQueue::TimerQueue(EventLoop *loop,int timerQueueSize)
 	channel_->setReadCallback(std::bind(&TimerQueue::handleExpireTimer,this));
 
 	channel_->enableReading();
+	
+	refreshTime();
+
 	std::cout<<"******************************************************"<<std::endl;
 
 }
@@ -109,19 +113,29 @@ void TimerQueue::handleExpireTimer()
 		return ;
 	int fd=channel_->fd();
 	int buff[10];
-	read(fd,buff,10);
+	read(fd,buff,10); //prevent the timer to be triggered immediately again
+
+	refreshTime();
+
 	std::lock_guard<std::mutex> lock(Mutex_);
 	timerQueue_[nowTimerQueuePos_].clear();
 
 
 	nowTimerQueuePos_++;
-
 	if(nowTimerQueuePos_>=TimerQueueSize)
 		nowTimerQueuePos_=0;
 	std::cout<<"handle Expire Timer\t\t"<<nowTimerQueuePos_<<std::endl;
 	
 }
 
+void TimerQueue::refreshTime()
+{
+	struct timeval now;
+
+	gettimeofday(&now,NULL);
+
+	nowTime_=now.tv_sec*1000*1000+now.tv_usec;	
+}
 
 void TimerQueue::push(Timer &tim)
 {	
@@ -133,7 +147,6 @@ void TimerQueue::push(Timer &tim)
 	timerQueue_[pos].push_back(tim);
 	std::cout<<"NowTimerQueuePos\t\t"<<nowTimerQueuePos_<<std::endl;
 }
-
 
 
 

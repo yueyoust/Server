@@ -43,7 +43,8 @@ public:
 	TimerQueue(EventLoop *loop,int TimerQueueSize);
 	
 	~TimerQueue();
-
+	
+	int64_t time(){return nowTime_;}
 
 	void push(Timer &tim);
 
@@ -51,6 +52,8 @@ public:
 
 private:
 	int TimerQueueSize;
+
+	int64_t nowTime_;
 	
 	typedef std::vector<std::vector<Timer>> TimeQueue;
 	
@@ -63,6 +66,8 @@ private:
 	int nowTimerQueuePos_;
 
 	void handleExpireTimer();	//100ms per slot;
+
+	void refreshTime();
 };
 
 //std::mutex TimerQueue::Mutex_;
