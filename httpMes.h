@@ -52,6 +52,8 @@ private:
 	
 	char fBuffer_[BufferSize];	
 
+	std::mutex Mutex_;
+
 	TimerQueue *timerQueue_;	
 
 	Timer *timer_;	

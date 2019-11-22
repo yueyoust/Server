@@ -1,3 +1,4 @@
+#include<unistd.h>
 #include"Poller.h"
 #include"Channel.h"
 
@@ -75,6 +76,7 @@ void Poller::removeChannel(Channel *channel)
 {
 	int idx= channel->index();
 	const struct pollfd &pfd=pollFds[idx];
+	int fd=channel->fd();
 	size_t n=channels.erase(channel->fd());
 	if(idx==pollFds.size()-1)
 	{
@@ -91,6 +93,7 @@ void Poller::removeChannel(Channel *channel)
 		channels[channelAtEnd]->set_index(idx);
 		pollFds.pop_back();
 	}
+	close(fd);
 
 }
 

@@ -65,7 +65,7 @@ Timer::~Timer()
 	if(*nowTimerQueuePos_-1==timerQueue_->index())
 	{
 		std::cout<<"timer ###################################################################### expired\t"<<__FILE__<<":"<<__LINE__<<std::endl;
-		if(httpRequest_->isValid())	
+	//	if(httpRequest_->isValid())	
 		httpRequest_->handleClose();
 		delete latestRefreshTime_;
 		delete nowTimerQueuePos_;
@@ -153,7 +153,7 @@ void TimerQueue::push(Timer &tim)
 	int pos=nowTimerQueuePos_-1;
 	if(pos<0)			//queue behind nowTimerQueuePos_
 		pos=TimerQueueSize-1;
-	timerQueue_[pos].push_back(tim);
+	timerQueue_[pos].push_back(std::move(tim));
 	std::cout<<"NowTimerQueuePos\t\t"<<nowTimerQueuePos_<<std::endl;
 }
 

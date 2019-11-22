@@ -40,6 +40,7 @@ void EventLoop::loop()
 		{
 			(*it)->handleEvent();
 		}
+		doPendingFunctors();
 	//	std::cout<<"looping\t"<<std::this_thread::get_id()<<'\t'<<activeChannels.size()<<std::endl;
 	}
 	looping=false;
@@ -62,7 +63,22 @@ void EventLoop::removeChannel(Channel *channel)
 	poller_->removeChannel(channel);
 }
 
+void EventLoop::queueInLoop(Functor &&cb)
+{
+	std::lock_guard<std::mutex> lock(Mutex_);
+	pendingFunctors_.emplace_back(std::move(cb));
+}
 
-
+void EventLoop::doPendingFunctors()
+{
+	std::vector<Functor> functors;
+	{
+		std::lock_guard<std::mutex> lock(Mutex_);
+		functors.swap(pendingFunctors_);
+	}
+	
+	for(auto &cb:functors)
+		cb();
+}
 
 

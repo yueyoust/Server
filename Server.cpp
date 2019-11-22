@@ -33,7 +33,6 @@ Server::Server(EventLoop *loop,int threadNum,int port)
 
 	timerQueue_=(new TimerQueue(tloop,10*10)); 
 
-	//Timer *tp(new Timer(NULL,timerQueue_,10));		
 	
 }
 

@@ -22,21 +22,27 @@ httpMes::httpMes(EventLoop *loop,TimerQueue *timerQueue,int connfd)
 
 void httpMes::handleClose()
 {	
-	channel_->remove();
-	close(fd_);
+	//channel_->remove();
+	std::lock_guard<std::mutex> lock(Mutex_);
+	if(!isValid())
+		return;
+	setHttpConnectionState(false);
+	loop_->queueInLoop(std::move(std::bind(&Channel::remove,channel_)));
+	//close(fd_);
 }
 void httpMes::handleRead()
 {
-
+	
+	timer_->refresh();
 	int fd =fd_;	
 	int num=read(fd,fBuffer_,4096);
-	if(num==0||!isValid())
+	if(num==0)
 	{
 		handleClose();
-		setHttpConnectionState(false);
 		std::cout<<"channel has been removed\t--file descriptor\t"<<fd<<std::endl;
 		return ;
-	}else timer_->refresh();
+	}
+	
 	
 	
 	if(state_==STATE_REQUEST_LINE)
