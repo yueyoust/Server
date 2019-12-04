@@ -44,7 +44,10 @@ int main()
 */	
 	Timestamp time=Timestamp::now();
 	std::cout<<time.toString()<<std::endl;;
-	signal(SIGPIPE,SIG_IGN);//ignore SIGPIPE;
+	struct sigaction sa;
+	sa.sa_handler=SIG_IGN;
+	sigaction(SIGPIPE,&sa,0);
+	//signal(SIGPIPE,SIG_IGN);//ignore SIGPIPE;
 	std::function<void()>callback=timeout;
 	EventLoop loop;
 	//g_loop=&loop;

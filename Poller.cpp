@@ -90,6 +90,8 @@ void Poller::removeChannel(Channel *channel)
 		{
 			channelAtEnd=-channelAtEnd-1;
 		}
+		if(channels[channelAtEnd]==NULL)
+			return ;
 		channels[channelAtEnd]->set_index(idx);
 		pollFds.pop_back();
 	}

@@ -15,19 +15,30 @@ httpMes::httpMes(EventLoop *loop,TimerQueue *timerQueue,int connfd)
 	channel_->setReadCallback(std::bind(&httpMes::handleRead,this));
 	//channel_->setWriteCallback(std::bind(&httpMes::handleWrite,this));
 	channel_->enableReading();	
-	std::cout<<"http %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<std::endl;
+	//std::cout<<"http %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<std::endl;
 	//timer_->refresh();
 }
 
+httpMes::~httpMes()
+{
+	close(fd_);
+	//delete channel_;
+	delete timer_;
+	std::cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+	
+}
 
 void httpMes::handleClose()
 {	
 	//channel_->remove();
-	std::lock_guard<std::mutex> lock(Mutex_);
-	if(!isValid())
-		return;
-	setHttpConnectionState(false);
+	{
+		std::lock_guard<std::mutex> lock(Mutex_);
+		if(!isValid())
+			return;
+		setHttpConnectionState(false);
+	}
 	loop_->queueInLoop(std::move(std::bind(&Channel::remove,channel_)));
+	loop_->queueInLoop(std::bind([&](){delete this;}));
 	//close(fd_);
 }
 void httpMes::handleRead()
@@ -100,9 +111,12 @@ void httpMes::handleRead()
     		header_buff += "Content-Length: " + std::to_string(body_buff.size()) + "\r\n";
     		header_buff += "Server: yueyou's Web Server\r\n";
     		header_buff += "\r\n";
-	
-		write(fd,header_buff.c_str(),header_buff.size());
-		write(fd,body_buff.c_str(),body_buff.size());
+		
+		header_buff+=std::move(body_buff);	
+		if(write(fd,header_buff.c_str(),header_buff.size())<0)
+			return ;
+		//if(write(fd,body_buff.c_str(),body_buff.size())<0)
+		//	return ;
 		
 		httpHeaders_.clear();
 	}	

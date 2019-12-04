@@ -10,6 +10,7 @@ class EventLoop;
 class Channel{
 public:
 	typedef std::function<void()> EventCallBack;
+	
 	Channel(EventLoop *loop,int fd);
 
 	void handleEvent();

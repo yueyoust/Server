@@ -22,7 +22,7 @@ class httpMes
 public:
 	httpMes(EventLoop *loop,TimerQueue *timerQueue,int connfd);
 
-	~httpMes() {close(fd_);}
+	~httpMes();
 	
 	bool isValid(){return connectionState_;}
 
